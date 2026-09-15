@@ -99,64 +99,145 @@ export default function SlipUpload({
   }
 
   return (
-    <div className="mt-6 rounded-2xl border border-dashed border-gray-300 p-6">
-      <p className="text-center font-semibold text-gray-900">
-        โอนเงินเรียบร้อยแล้ว?
-      </p>
+    <section className="overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm">
+      {/* HEADER */}
+      <div className="border-b border-gray-100 px-5 py-5 sm:px-7">
+        <p className="text-[11px] font-black uppercase tracking-wide text-red-600">
+          PAYMENT VERIFICATION
+        </p>
 
-      <p className="mt-2 text-center text-sm text-gray-500">
-        อัปโหลดสลิปเพื่อยืนยันการชำระเงิน
-      </p>
+        <h2 className="mt-2 text-xl font-black text-gray-900">
+          โอนเงินแล้ว อัปโหลดสลิปที่นี่
+        </h2>
 
-      <label className="mt-5 block cursor-pointer rounded-xl border border-gray-300 bg-white px-4 py-4 text-center text-sm font-medium text-gray-700 hover:bg-gray-50">
-        เลือกรูปสลิป
+        <p className="mt-2 text-sm leading-6 text-gray-500">
+          ระบบจะตรวจสอบข้อมูลการชำระเงิน
+          และยืนยันรายการจองหลังตรวจสอบสำเร็จ
+        </p>
+      </div>
 
-        <input
-          type="file"
-          accept="image/jpeg,image/png,image/webp,image/gif"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-      </label>
+      <div className="p-5 sm:p-7">
+        {/* UPLOAD AREA */}
+        <label className="group block cursor-pointer rounded-3xl border-2 border-dashed border-gray-300 bg-[#fafafa] px-5 py-8 text-center transition hover:border-red-300 hover:bg-red-50/30">
+          <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-red-50 text-xl">
+            ↑
+          </div>
 
-      {file && (
-        <div className="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-700">
-          <p className="font-medium">
-            เลือกไฟล์แล้ว
+          <p className="mt-4 font-bold text-gray-900">
+            {file
+              ? "เปลี่ยนรูปสลิป"
+              : "เลือกรูปสลิป"}
           </p>
 
-          <p className="mt-1 break-all">
-            {file.name}
+          <p className="mt-2 text-xs leading-5 text-gray-500">
+            แตะเพื่อเลือกรูปจากโทรศัพท์หรือคอมพิวเตอร์
           </p>
-        </div>
-      )}
 
-      {message && (
-        <div
-          className={`mt-4 rounded-xl p-4 text-sm ${
-            success
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-700"
-          }`}
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </label>
+
+        {/* SELECTED FILE */}
+        {file && (
+          <div className="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4">
+            <div className="flex items-start gap-3">
+              <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-green-600 text-xs font-black text-white">
+                ✓
+              </div>
+
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-green-900">
+                  เลือกไฟล์แล้ว
+                </p>
+
+                <p className="mt-1 break-all text-sm text-green-700">
+                  {file.name}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* MESSAGE */}
+        {message && (
+          <div
+            className={`mt-4 rounded-2xl border p-4 text-sm leading-6 ${
+              success
+                ? "border-green-200 bg-green-50 text-green-700"
+                : "border-red-200 bg-red-50 text-red-700"
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <div
+                className={`grid h-7 w-7 shrink-0 place-items-center rounded-full text-xs font-black text-white ${
+                  success
+                    ? "bg-green-600"
+                    : "bg-red-600"
+                }`}
+              >
+                {success ? "✓" : "!"}
+              </div>
+
+              <p>{message}</p>
+            </div>
+          </div>
+        )}
+
+        {/* VERIFY BUTTON */}
+        <button
+          type="button"
+          onClick={handleVerifySlip}
+          disabled={!file || submitting}
+          className="mt-5 flex min-h-[54px] w-full items-center justify-center rounded-2xl bg-red-600 px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-red-100 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none"
         >
-          {message}
+          {submitting
+            ? "กำลังตรวจสอบสลิป..."
+            : "ตรวจสอบสลิปและยืนยันการจอง →"}
+        </button>
+
+        {!file && (
+          <p className="mt-3 text-center text-xs text-gray-400">
+            กรุณาเลือกรูปสลิปก่อนตรวจสอบ
+          </p>
+        )}
+
+        {/* INFO */}
+        <div className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="rounded-2xl bg-gray-50 p-4">
+            <p className="text-xs font-bold text-gray-800">
+              ไฟล์ที่รองรับ
+            </p>
+
+            <p className="mt-1 text-[11px] leading-5 text-gray-500">
+              JPG, PNG, WebP และ GIF
+            </p>
+          </div>
+
+          <div className="rounded-2xl bg-gray-50 p-4">
+            <p className="text-xs font-bold text-gray-800">
+              ขนาดไฟล์
+            </p>
+
+            <p className="mt-1 text-[11px] leading-5 text-gray-500">
+              ไม่เกิน 4 MB
+            </p>
+          </div>
         </div>
-      )}
 
-      <button
-        type="button"
-        onClick={handleVerifySlip}
-        disabled={!file || submitting}
-        className="mt-4 w-full rounded-xl bg-gray-900 px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:bg-gray-300"
-      >
-        {submitting
-          ? "กำลังตรวจสอบสลิป..."
-          : "ตรวจสอบสลิป"}
-      </button>
+        <div className="mt-4 rounded-2xl border border-gray-200 p-4 text-[11px] leading-5 text-gray-500">
+          <strong className="text-gray-800">
+            ก่อนอัปโหลด
+          </strong>
 
-      <p className="mt-3 text-center text-xs text-gray-400">
-        รองรับ JPG, PNG, WebP และ GIF ขนาดไม่เกิน 4 MB
-      </p>
-    </div>
+          <p className="mt-1">
+            กรุณาตรวจสอบว่ายอดเงินในสลิปตรงกับยอดที่แสดงบนหน้าชำระเงิน
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }

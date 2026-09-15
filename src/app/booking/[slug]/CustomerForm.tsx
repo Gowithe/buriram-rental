@@ -53,8 +53,7 @@ export default function CustomerForm({
   const [calculatingDelivery, setCalculatingDelivery] =
     useState(false);
 
-  const [deliveryError, setDeliveryError] =
-    useState("");
+  const [deliveryError, setDeliveryError] = useState("");
 
   const [customerNote, setCustomerNote] = useState("");
 
@@ -62,8 +61,7 @@ export default function CustomerForm({
   const [errorMessage, setErrorMessage] = useState("");
 
   const finalTotal =
-    fulfillmentMethod === "delivery" &&
-    deliveryFee !== null
+    fulfillmentMethod === "delivery" && deliveryFee !== null
       ? totalAmount + deliveryFee
       : totalAmount;
 
@@ -132,28 +130,14 @@ export default function CustomerForm({
       "create_booking",
       {
         p_product_id: productId,
-
-        p_start_datetime: new Date(
-          startDate
-        ).toISOString(),
-
-        p_end_datetime: new Date(
-          endDate
-        ).toISOString(),
-
+        p_start_datetime: new Date(startDate).toISOString(),
+        p_end_datetime: new Date(endDate).toISOString(),
         p_customer_name: customerName.trim(),
-
         p_phone: phone.trim(),
-
-        p_line_contact:
-          lineContact.trim() || null,
-
+        p_line_contact: lineContact.trim() || null,
         p_fulfillment_method: "pickup",
-
         p_delivery_address: null,
-
-        p_customer_note:
-          customerNote.trim() || null,
+        p_customer_note: customerNote.trim() || null,
       }
     );
 
@@ -191,13 +175,11 @@ export default function CustomerForm({
           endDate,
           customerName: customerName.trim(),
           phone: phone.trim(),
-          lineContact:
-            lineContact.trim() || null,
+          lineContact: lineContact.trim() || null,
           deliveryAddress,
           deliveryLatitude,
           deliveryLongitude,
-          customerNote:
-            customerNote.trim() || null,
+          customerNote: customerNote.trim() || null,
         }),
       }
     );
@@ -206,26 +188,17 @@ export default function CustomerForm({
 
     if (!response.ok || !data.success) {
       if (
-        data.message ===
-        "DELIVERY_DISTANCE_TOO_FAR"
+        data.message === "DELIVERY_DISTANCE_TOO_FAR"
       ) {
-        throw new Error(
-          "DELIVERY_DISTANCE_TOO_FAR"
-        );
+        throw new Error("DELIVERY_DISTANCE_TOO_FAR");
       }
 
-      if (
-        data.message ===
-        "PRODUCT_NOT_AVAILABLE"
-      ) {
-        throw new Error(
-          "PRODUCT_NOT_AVAILABLE"
-        );
+      if (data.message === "PRODUCT_NOT_AVAILABLE") {
+        throw new Error("PRODUCT_NOT_AVAILABLE");
       }
 
       throw new Error(
-        data.message ||
-          "BOOKING_CREATION_FAILED"
+        data.message || "BOOKING_CREATION_FAILED"
       );
     }
 
@@ -295,36 +268,24 @@ export default function CustomerForm({
       let bookingNumber = "";
 
       if (fulfillmentMethod === "pickup") {
-        bookingNumber =
-          await createPickupBooking();
+        bookingNumber = await createPickupBooking();
       } else {
-        bookingNumber =
-          await createDeliveryBooking();
+        bookingNumber = await createDeliveryBooking();
       }
 
-      router.push(
-        `/payment/${bookingNumber}`
-      );
+      router.push(`/payment/${bookingNumber}`);
     } catch (error) {
       console.error(error);
 
       const message =
-        error instanceof Error
-          ? error.message
-          : "";
+        error instanceof Error ? error.message : "";
 
-      if (
-        message.includes(
-          "PRODUCT_NOT_AVAILABLE"
-        )
-      ) {
+      if (message.includes("PRODUCT_NOT_AVAILABLE")) {
         setErrorMessage(
           "ช่วงเวลานี้ถูกจองไปแล้ว กรุณาเลือกวันหรือเวลาอื่น"
         );
       } else if (
-        message.includes(
-          "DELIVERY_DISTANCE_TOO_FAR"
-        )
+        message.includes("DELIVERY_DISTANCE_TOO_FAR")
       ) {
         setErrorMessage(
           "ระยะทางเกิน 15 กม. กรุณาติดต่อร้านเพื่อประเมินค่าจัดส่ง"
@@ -340,55 +301,64 @@ export default function CustomerForm({
   }
 
   return (
-    <div className="mt-8 rounded-2xl border border-gray-200 bg-white p-5">
+    <div className="rounded-3xl border border-gray-200 bg-white p-5 sm:p-6">
+      {/* CUSTOMER INFO */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900">
+        <p className="text-[11px] font-black uppercase tracking-wide text-red-600">
           ข้อมูลผู้เช่า
-        </h2>
+        </p>
 
-        <p className="mt-1 text-sm text-gray-500">
-          กรอกข้อมูลเพื่อยืนยันการจอง {productName}
+        <h3 className="mt-1 text-lg font-bold text-gray-900">
+          ข้อมูลสำหรับติดต่อ
+        </h3>
+
+        <p className="mt-1 text-xs leading-5 text-gray-500">
+          ใช้สำหรับยืนยันรายการจองและติดต่อเรื่องการรับ-คืนสินค้า
         </p>
       </div>
 
       <form
         onSubmit={handleSubmit}
-        className="mt-6 space-y-5"
+        className="mt-6 space-y-6"
       >
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            ชื่อผู้เช่า *
-          </label>
+        {/* NAME / PHONE */}
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-800">
+              ชื่อผู้เช่า <span className="text-red-600">*</span>
+            </label>
 
-          <input
-            type="text"
-            value={customerName}
-            onChange={(event) =>
-              setCustomerName(event.target.value)
-            }
-            placeholder="ชื่อ-นามสกุล"
-            className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-gray-500"
-          />
+            <input
+              type="text"
+              value={customerName}
+              onChange={(event) =>
+                setCustomerName(event.target.value)
+              }
+              placeholder="ชื่อ-นามสกุล"
+              className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3.5 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-800">
+              เบอร์โทรศัพท์ <span className="text-red-600">*</span>
+            </label>
+
+            <input
+              type="tel"
+              value={phone}
+              onChange={(event) =>
+                setPhone(event.target.value)
+              }
+              placeholder="เช่น 0812345678"
+              className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3.5 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
+            />
+          </div>
         </div>
 
+        {/* LINE */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            เบอร์โทรศัพท์ *
-          </label>
-
-          <input
-            type="tel"
-            value={phone}
-            onChange={(event) =>
-              setPhone(event.target.value)
-            }
-            placeholder="เช่น 0812345678"
-            className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-gray-500"
-          />
-        </div>
-
-        <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
+          <label className="mb-2 block text-sm font-bold text-gray-800">
             LINE ID / เบอร์ติดต่อ LINE
           </label>
 
@@ -399,16 +369,25 @@ export default function CustomerForm({
               setLineContact(event.target.value)
             }
             placeholder="ไม่บังคับ"
-            className="w-full rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-gray-500"
+            className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3.5 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
           />
+
+          <p className="mt-2 text-[11px] text-gray-500">
+            ไม่จำเป็นต้องกรอก หากสะดวกติดต่อทางโทรศัพท์
+          </p>
         </div>
 
-        <div>
-          <label className="mb-3 block text-sm font-medium text-gray-700">
-            วิธีรับสินค้า *
-          </label>
+        {/* FULFILLMENT */}
+        <section className="border-t border-gray-200 pt-6">
+          <p className="text-[11px] font-black uppercase tracking-wide text-red-600">
+            วิธีรับสินค้า
+          </p>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <h3 className="mt-1 text-lg font-bold text-gray-900">
+            ต้องการรับเครื่องแบบไหน?
+          </h3>
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <button
               type="button"
               onClick={() => {
@@ -416,18 +395,30 @@ export default function CustomerForm({
                 resetDelivery();
                 setErrorMessage("");
               }}
-              className={`rounded-xl border p-4 text-left transition ${
+              className={`relative rounded-2xl border-2 p-5 text-left transition ${
                 fulfillmentMethod === "pickup"
-                  ? "border-green-600 bg-green-50 ring-1 ring-green-600"
-                  : "border-gray-200 bg-white"
+                  ? "border-red-600 bg-red-50"
+                  : "border-gray-200 bg-white hover:border-gray-300"
               }`}
             >
-              <p className="font-medium text-gray-900">
+              {fulfillmentMethod === "pickup" && (
+                <div className="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-full bg-red-600 text-xs font-black text-white">
+                  ✓
+                </div>
+              )}
+
+              <div className="text-2xl">📦</div>
+
+              <p className="mt-3 font-bold text-gray-900">
                 รับสินค้าเอง
               </p>
 
-              <p className="mt-1 text-sm text-green-700">
-                ฟรี
+              <p className="mt-1 text-xs leading-5 text-gray-500">
+                นัดหมายวันและเวลารับสินค้า
+              </p>
+
+              <p className="mt-3 text-sm font-black text-green-700">
+                ไม่มีค่าจัดส่ง
               </p>
             </button>
 
@@ -437,56 +428,93 @@ export default function CustomerForm({
                 setFulfillmentMethod("delivery");
                 setErrorMessage("");
               }}
-              className={`rounded-xl border p-4 text-left transition ${
+              className={`relative rounded-2xl border-2 p-5 text-left transition ${
                 fulfillmentMethod === "delivery"
-                  ? "border-green-600 bg-green-50 ring-1 ring-green-600"
-                  : "border-gray-200 bg-white"
+                  ? "border-red-600 bg-red-50"
+                  : "border-gray-200 bg-white hover:border-gray-300"
               }`}
             >
-              <p className="font-medium text-gray-900">
+              {fulfillmentMethod === "delivery" && (
+                <div className="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-full bg-red-600 text-xs font-black text-white">
+                  ✓
+                </div>
+              )}
+
+              <div className="text-2xl">🚚</div>
+
+              <p className="mt-3 font-bold text-gray-900">
                 จัดส่งถึงที่
               </p>
 
-              <p className="mt-1 text-sm text-gray-500">
-                คิดค่าจัดส่งตามระยะทาง
+              <p className="mt-1 text-xs leading-5 text-gray-500">
+                ระบบคำนวณจากระยะทางตามถนน
+              </p>
+
+              <p className="mt-3 text-sm font-bold text-gray-800">
+                เริ่มต้น 50 บาท
               </p>
             </button>
           </div>
-        </div>
 
+          <div className="mt-3 rounded-2xl bg-gray-50 px-4 py-3 text-[11px] leading-5 text-gray-500">
+            ค่าจัดส่ง: 0–5 กม. 50 บาท • มากกว่า 5–10 กม.
+            100 บาท • มากกว่า 10–15 กม. 150 บาท
+          </div>
+        </section>
+
+        {/* DELIVERY */}
         {fulfillmentMethod === "delivery" && (
-          <div className="rounded-2xl border border-green-200 bg-green-50 p-4">
-            <label className="mb-2 block text-sm font-medium text-green-900">
-              ค้นหาสถานที่จัดส่ง *
-            </label>
+          <section className="rounded-3xl border border-red-100 bg-[#fffafa] p-5">
+            <div>
+              <p className="text-[11px] font-black text-red-600">
+                สถานที่จัดส่ง
+              </p>
 
-            <GooglePlaceAutocomplete
-              onPlaceSelected={async (place) => {
-                setDeliveryAddress(place.address);
-                setDeliveryLatitude(place.latitude);
-                setDeliveryLongitude(place.longitude);
+              <h3 className="mt-1 font-bold text-gray-900">
+                ค้นหาที่อยู่ของคุณ
+              </h3>
 
-                await calculateDelivery(
-                  place.latitude,
-                  place.longitude
-                );
-              }}
-            />
+              <p className="mt-1 text-xs leading-5 text-gray-500">
+                เลือกสถานที่จากผลการค้นหา
+                เพื่อให้ระบบคำนวณระยะทางตามถนนและค่าจัดส่ง
+              </p>
+            </div>
+
+            <div className="mt-4">
+              <GooglePlaceAutocomplete
+                onPlaceSelected={async (place) => {
+                  setDeliveryAddress(place.address);
+                  setDeliveryLatitude(place.latitude);
+                  setDeliveryLongitude(place.longitude);
+
+                  await calculateDelivery(
+                    place.latitude,
+                    place.longitude
+                  );
+                }}
+              />
+            </div>
 
             {deliveryAddress && (
-              <div className="mt-4 rounded-xl bg-white p-3 text-sm">
-                {deliveryAddress}
+              <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-4">
+                <p className="text-[10px] font-bold uppercase text-gray-400">
+                  ที่อยู่ที่เลือก
+                </p>
+
+                <p className="mt-1 text-sm leading-6 text-gray-700">
+                  {deliveryAddress}
+                </p>
               </div>
             )}
 
             {calculatingDelivery && (
-              <div className="mt-3 rounded-xl bg-white p-3 text-sm text-gray-600">
+              <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-4 text-sm text-gray-600">
                 กำลังคำนวณระยะทางและค่าจัดส่ง...
               </div>
             )}
 
             {deliveryError && (
-              <div className="mt-3 rounded-xl bg-red-50 p-3 text-sm text-red-700">
+              <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
                 {deliveryError}
               </div>
             )}
@@ -495,19 +523,23 @@ export default function CustomerForm({
               deliveryDistanceKm !== null &&
               deliveryFee !== null &&
               !contactRequired && (
-                <div className="mt-3 rounded-xl bg-white p-4">
-                  <div className="flex justify-between text-sm">
-                    <span>ระยะทางตามถนน</span>
+                <div className="mt-4 overflow-hidden rounded-2xl border border-gray-200 bg-white">
+                  <div className="flex items-center justify-between gap-4 border-b border-gray-100 px-4 py-3 text-sm">
+                    <span className="text-gray-500">
+                      ระยะทางตามถนน
+                    </span>
 
-                    <strong>
+                    <strong className="text-gray-900">
                       {deliveryDistanceKm.toLocaleString()} กม.
                     </strong>
                   </div>
 
-                  <div className="mt-2 flex justify-between text-sm">
-                    <span>ค่าจัดส่ง</span>
+                  <div className="flex items-center justify-between gap-4 px-4 py-3 text-sm">
+                    <span className="text-gray-500">
+                      ค่าจัดส่ง
+                    </span>
 
-                    <strong className="text-green-700">
+                    <strong className="text-red-600">
                       {deliveryFee.toLocaleString()} บาท
                     </strong>
                   </div>
@@ -515,17 +547,19 @@ export default function CustomerForm({
               )}
 
             {contactRequired && (
-              <div className="mt-3 rounded-xl bg-orange-50 p-4 text-sm text-orange-800">
+              <div className="mt-4 rounded-2xl border border-orange-200 bg-orange-50 p-4 text-sm leading-6 text-orange-800">
                 ระยะทางเกิน 15 กม.
-                กรุณาติดต่อร้านเพื่อประเมินค่าจัดส่ง
+                กรุณาติดต่อร้านก่อนทำรายการจอง
+                เพื่อประเมินค่าจัดส่ง
               </div>
             )}
-          </div>
+          </section>
         )}
 
+        {/* NOTE */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">
-            หมายเหตุ
+          <label className="mb-2 block text-sm font-bold text-gray-800">
+            หมายเหตุเพิ่มเติม
           </label>
 
           <textarea
@@ -534,80 +568,108 @@ export default function CustomerForm({
               setCustomerNote(event.target.value)
             }
             rows={3}
-            placeholder="รายละเอียดเพิ่มเติม"
-            className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-gray-500"
+            placeholder="เช่น รายละเอียดการนัดรับ หรือข้อมูลเพิ่มเติม (ไม่บังคับ)"
+            className="w-full resize-none rounded-2xl border border-gray-300 bg-white px-4 py-3.5 text-sm outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100"
           />
         </div>
 
-        <div className="rounded-2xl bg-gray-50 p-4">
-          <p className="font-medium text-gray-900">
-            สรุปรายการจอง
-          </p>
+        {/* SUMMARY */}
+        <section className="overflow-hidden rounded-3xl border border-gray-200 bg-[#f7f6f4]">
+          <div className="border-b border-gray-200 px-5 py-4">
+            <p className="text-[11px] font-black uppercase tracking-wide text-red-600">
+              สรุปรายการ
+            </p>
 
-          <div className="mt-3 space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span>ค่าเช่า</span>
+            <h3 className="mt-1 font-bold text-gray-900">
+              ยอดที่ต้องชำระ
+            </h3>
+          </div>
 
-              <span>
+          <div className="space-y-3 px-5 py-5 text-sm">
+            <div className="flex justify-between gap-4">
+              <span className="text-gray-500">
+                ค่าเช่า
+              </span>
+
+              <strong>
                 {rentalAmount.toLocaleString()} บาท
-              </span>
+              </strong>
             </div>
 
-            <div className="flex justify-between">
-              <span>ค่ามัดจำ</span>
+            <div className="flex justify-between gap-4">
+              <span className="text-gray-500">
+                เงินประกัน
+              </span>
 
-              <span>
+              <strong>
                 {depositAmount.toLocaleString()} บาท
-              </span>
+              </strong>
             </div>
 
-            <div className="flex justify-between">
-              <span>ค่าจัดส่ง</span>
+            <div className="flex justify-between gap-4">
+              <span className="text-gray-500">
+                ค่าจัดส่ง
+              </span>
 
-              <span>
+              <strong>
                 {fulfillmentMethod === "pickup"
-                  ? "ฟรี"
+                  ? "0 บาท"
                   : deliveryFee !== null
                     ? `${deliveryFee.toLocaleString()} บาท`
                     : "รอคำนวณ"}
-              </span>
+              </strong>
             </div>
 
-            <div className="border-t border-gray-200 pt-3">
-              <div className="flex justify-between font-semibold">
-                <span>ยอดรวม</span>
+            <div className="border-t border-gray-300 pt-4">
+              <div className="flex items-end justify-between gap-4">
+                <strong className="text-gray-900">
+                  รวมทั้งหมด
+                </strong>
 
-                <span>
-                  {finalTotal.toLocaleString()} บาท
-                </span>
+                <div>
+                  <strong className="text-2xl font-black text-red-600">
+                    {finalTotal.toLocaleString()}
+                  </strong>
+
+                  <span className="ml-1 text-xs font-bold">
+                    บาท
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {errorMessage && (
-          <div className="rounded-xl bg-red-50 p-4 text-sm text-red-700">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm leading-6 text-red-700">
             {errorMessage}
           </div>
         )}
 
-        <button
-          type="submit"
-          disabled={
-            submitting ||
-            calculatingDelivery ||
-            (fulfillmentMethod === "delivery" &&
-              (contactRequired ||
-                deliveryFee === null))
-          }
-          className="w-full rounded-xl bg-gray-900 px-4 py-3 font-medium text-white disabled:cursor-not-allowed disabled:bg-gray-400"
-        >
-          {submitting
-            ? "กำลังสร้างรายการจอง..."
-            : fulfillmentMethod === "delivery"
-              ? "ยืนยันการจองและจัดส่ง"
-              : "ยืนยันการจอง"}
-        </button>
+        {/* SUBMIT */}
+        <div>
+          <button
+            type="submit"
+            disabled={
+              submitting ||
+              calculatingDelivery ||
+              (fulfillmentMethod === "delivery" &&
+                (contactRequired || deliveryFee === null))
+            }
+            className="flex min-h-[56px] w-full items-center justify-center rounded-2xl bg-red-600 px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-red-100 transition hover:bg-red-700 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:shadow-none"
+          >
+            {submitting
+              ? "กำลังสร้างรายการจอง..."
+              : fulfillmentMethod === "delivery"
+                ? "ยืนยันการจองและไปชำระเงิน →"
+                : "ยืนยันการจองและไปชำระเงิน →"}
+          </button>
+
+          <p className="mt-3 text-center text-[11px] leading-5 text-gray-500">
+            หลังยืนยันรายการ ระบบจะสร้างเลขที่การจอง
+            และนำคุณไปยังหน้าชำระเงิน
+          </p>
+        </div>
       </form>
     </div>
   );
